@@ -58,7 +58,7 @@ Create a properties file with the following configurations which is used when us
 Place in the root of the maven project.
 
 .wildfly.properties
-[source,properties]
+[source]
 ----
 info.text=This is the wildfly info test
 google.rest/mp-rest/url=https://www.googleapis.com
