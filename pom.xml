@@ -10,27 +10,28 @@
     <packaging>war</packaging>
 
     <properties>
-        <!-- Compiler -->
+        <!-- Compiler Plugin Properties -->
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Plugin Versions -->
-        <fabric8.maven.plugin.version>4.3.1</fabric8.maven.plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
         <maven-war-plugin.version>3.2.3</maven-war-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+        <fabric8.maven.plugin.version>4.3.1</fabric8.maven.plugin.version>
 
 
         <!-- OCP Descriptor Fragment Parameters -->
         <ocp.config.dir>/config</ocp.config.dir>
         <ocp.secret.name>${project.artifactId}</ocp.secret.name>
 
-        <!-- Fabric8 Properties -->
+        <!-- Fabric8 Plugin Properties -->
         <fabric8.skipHealthCheck>true</fabric8.skipHealthCheck>
         <fabric8.openshift.imageChangeTrigger>true</fabric8.openshift.imageChangeTrigger>
     </properties>
+
+    <!-- The API Dependencies we implement the application with -->
     <dependencies>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -82,23 +83,31 @@
     </dependencies>
 
     <build>
+        <!-- The used maven plugins used by all profiles -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${maven-clean-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>${maven-war-plugin.version}</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
     <profiles>
+        <!-- Thorntail Profile, for building the microservice -->
         <profile>
             <id>thorntail</id>
             <properties>
@@ -174,6 +183,7 @@
             </build>
         </profile>
 
+        <!-- Wildfly Profile, for deploying as an ordinary war -->
         <profile>
             <id>wildfly</id>
             <properties>
@@ -212,12 +222,11 @@
             </build>
         </profile>
 
-        <!-- This profile is for remote deployment of the service -->
+        <!-- Fabric8 Profile, for deploying the thorntail microservice in Openshift -->
         <profile>
             <id>fabric8</id>
             <build>
                 <plugins>
-                    <!-- https://maven.fabric8.io/ -->
                     <plugin>
                         <groupId>io.fabric8</groupId>
                         <artifactId>fabric8-maven-plugin</artifactId>
@@ -246,7 +255,6 @@
                                 </config>
                             </generator>
                             <apiVersion>1</apiVersion>
-                            <podName>${project.artifactId}-${project.version}</podName>
                             <mode>openshift</mode>
                             <buildStrategy>s2i</buildStrategy>
                             <buildRecreate>none</buildRecreate>

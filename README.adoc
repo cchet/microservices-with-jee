@@ -10,6 +10,14 @@ the application doesn't need to be implemented in a special way to get it runnin
 
 The following technologies have been used to implement and run the microservice:
 
+* link:https://openjdk.java.net/projects/jdk/11/[Java 11]
+* link:https://maven.apache.org/[Maven >=3.6.0]
+* link:https://microprofile.io/project/eclipse/microprofile-config[microprofile-config] +
+  MicroProfile-Config for injecting config parameters
+* link:https://microprofile.io/project/eclipse/microprofile-health[microprofile-health] +
+  MicroProfile-Health for health endpoints
+* link:https://microprofile.io/project/eclipse/microprofile-rest-client[microprofile-rest-client] +
+  MicroProfile-Rest-Client for type-safe Rest-Clients
 * link:https://maven.fabric8.io/[fabric8-maven-plugin] +
   A maven plugin which can produce docker images, and is capable of intercating with kubernetes/opesnhift
 * link:https://docs.thorntail.io/2.5.0.Final/#using-thorntail-maven-plugin_thorntail[thorntail-maven-plugin] +
@@ -23,6 +31,8 @@ The following listed resources of thi project are worth being mentioned.
   The openshift deployment fragment used and enriched by fabric8
 * ``src/main/fabric8/route.yml`` +
   The openshift route fragment used and enriched by fabric8
+* ``pom.xml`` +
+  The maven pom which contains the configurations for the used plugins
 
 == Preparations
 
@@ -46,11 +56,11 @@ thorntail:
       config-sources:
         configuration:
           properties:
-            info.text: "This is the thorntail info test"
+            info.text: "This is the thorntail info text"
             google.rest/mp-rest/url: "https://www.googleapis.com"
             google.rest/mp-rest/scope: "javax.enterprise.context.Dependent"
             google.rest.cx: "your_search_engine_cx"
-            google.rest.apiKey: "your_google_api_key_for_Search_engine"
+            google.rest.apiKey: "your_google_api_key_for_search_engine"
 ----
 
 === Wildfly
@@ -60,11 +70,11 @@ Place in the root of the maven project.
 .wildfly.properties
 [source]
 ----
-info.text=This is the wildfly info test
+info.text=This is the wildfly info text
 google.rest/mp-rest/url=https://www.googleapis.com
 google.rest/mp-rest/scope=javax.enterprise.context.RequestScoped
 google.rest.cx=your_search_engine_cx
-google.rest.apiKey=your_google_api_key_for_Search_engine
+google.rest.apiKey=your_google_api_key_for_search_engine
 ----
 
 === Openshift
@@ -76,3 +86,64 @@ confidential configuration parameters.
 ----
  oc create secret generic sample --from-file=thorntail.yml=thorntail.yml
 ----
+
+== Run the application
+=== Thorntail
+
+.Via maven plugin
+[source,bash]
+----
+mvn clean install thorntail:run -Pthorntail
+----
+
+.As standalone jar
+[source,bash]
+----
+java -Xmx512m -Dthorntail.bind.address=127.0.0.1 -Djava.net.preferIPv4Stack=true -jar target\sample-0.0.1-SNAPSHOT-thorntail.jar -s thorntail.yml
+----
+
+WARNING: On Windows you need to put the system properties in quotes. E.g "-Djava.net.preferIPv4Stack=true". +
+         See link:https://appuals.com/how-to-fix-unable-to-execute-file-in-the-temporary-directory-error-on-windows-7-8-and-10/[here]
+         for help with permission issue with TEMP directory
+
+=== Wildfly
+
+.Via maven plugin
+[source,bash]
+----
+mvn clean install wildfly:run -Pwildfly
+----
+
+=== Fabric8 (Openshift)
+Ensure your are logged into a openshift Clsuter >=3.9 and have the proper project selected.
+
+.Via maven plugin
+[source,bash]
+----
+mvn clean install -Pthorntail,fabric8
+----
+
+== Test the application
+
+=== REST Endpoints
+
+==== Thorntail locally
+``GET http://localhost:8080/info`` +
+
+``GET http://localhost:8080/config`` +
+
+``GET http://localhost:8080/search?query=thorntail``
+
+==== Wildfly locally
+``GET http://localhost:8080/sample-0.0.1-SNAPSHOT/info`` +
+
+``GET http://localhost:8080/sample-0.0.1-SNAPSHOT/config`` +
+
+``GET http://localhost:8080/sample-0.0.1-SNAPSHOT/search?query=thorntail``
+
+==== Openshift
+``GET http://<OCP_ROUTE_HOST>/info`` +
+
+``GET http://<OCP_ROUTE_HOST>/config`` +
+
+``GET http://<OCP_ROUTE_HOST>/search?query=thorntail`` +
