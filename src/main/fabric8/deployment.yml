@@ -1,0 +1,59 @@
+spec:
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 5
+      intervalSeconds: 5
+      timeoutSeconds: 120
+  replicas: 1
+  template:
+    spec:
+      volumes:
+        - name: "${project.artifactId}-secret"
+          secret:
+            secretName: "${ocp.secret.name}"
+      containers:
+        - name: ${project.artifactId}
+          resources:
+            requests:
+              cpu: "0.5"
+              memory: 128Mi
+            limits:
+              cpu: "1.0"
+              memory: 512Mi
+          readinessProbe:
+            exec:
+              command:
+                - "curl"
+                - "-sSf"
+                - "http://localhost:8080/health/ready"
+            successThreshold: 1
+            failureThreshold: 10
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+          #########################################
+#            httpGet:
+#              path: /health/ready
+#              port: 8080
+#              scheme: HTTP
+#            successThreshold: 1
+#            failureThreshold: 10
+#            initialDelaySeconds: 15
+#            periodSeconds: 10
+#            timeoutSeconds: 5
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+              - name: "${project.artifactId}-secret"
+                mountPath: "${ocp.mpc.dir}"
+                readOnly: true
+          env:
+            - name: "AB_JOLOKIA_HTTPS"
+              value: "true"
+            - name: "AB_PROMETHEUS_OFF"
+              value: "true"
+            - name: "JAVA_MAX_MEM_RATIO"
+              value: "95"
+            - name: "JAVA_OPTIONS"
+              value: "-Dthorntail.bind.address=0.0.0.0 -Djava.net.preferIPv4Stack=true -Dthorntail.project.stage=openshift"

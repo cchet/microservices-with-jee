@@ -1,0 +1,64 @@
+= microservices-with-jee
+
+Showcase of microservices with JEE technologies
+
+== Thorntail
+Create a yml file with the following configurations which is used when using thorntail locally. +
+Place in the root of the maven project.
+
+.thorntail.yml
+[source,yml]
+----
+# Stage for local development
+project:
+  stage: local
+thorntail:
+  microprofile:
+    config:
+      config-sources:
+        configuration:
+          properties:
+            info.text: "This is the thorntail info test"
+            google.rest/mp-rest/url: "https://www.googleapis.com"
+            google.rest/mp-rest/scope: "javax.enterprise.context.Dependent"
+            google.rest.cx: "your_search_engine_cx"
+            google.rest.apiKey: "your_google_api_key_for_Search_engine"
+----
+
+Create a properties file with the following configurations which is used when using thorntail within openshift.
+
+.thorntail.properties
+[source,properties]
+----
+info.text=This is the wildfly info test
+google.rest/mp-rest/url=https://www.googleapis.com
+google.rest/mp-rest/scope=javax.enterprise.context.RequestScoped
+google.rest.cx=your_search_engine_cx
+google.rest.apiKey=your_google_api_key_for_Search_engine
+----
+
+== Wildfly
+Create a properties file with the following configurations which is used when using wildfly.
+Place in the root of the maven project.
+
+.wildfly.properties
+[source,properties]
+----
+info.text=This is the wildfly info test
+google.rest/mp-rest/url=https://www.googleapis.com
+google.rest/mp-rest/scope=javax.enterprise.context.RequestScoped
+google.rest.cx=your_search_engine_cx
+google.rest.apiKey=your_google_api_key_for_Search_engine
+----
+
+== Openshift
+Create a Openshift secret which holds the configurations for the microservice. We use a secret because we have
+confidential configuration parameters.
+
+.Create openshift secret
+[source,bash]
+----
+ oc create secret generic sample --from-env-file=thorntail.properties
+----
+
+WARNING: This command works with OCP 3.9 and later.

@@ -1,0 +1,12 @@
+spec:
+  host: "${project.artifactId}.openshift.atliwest.local"
+  to:
+    kind: Service
+    name: ${project.artifactId}
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  wildcardPolicy: None
