@@ -1,7 +1,7 @@
 = microservices-with-jee
 
 This repository holds a showcase of a microservice implemented in JEE (Jakarta-Enterprise) with thorntail, which
-has been implemented for the community event https://www.devtreff.io/.
+has been implemented for the community event https://www.devtreff.io/ (14.11.2019).
 
 == Description
 The microservice has been implemented in plain JEE with making use of some microprofile specifcations. +
@@ -12,12 +12,16 @@ The following technologies have been used to implement and run the microservice:
 
 * link:https://openjdk.java.net/projects/jdk/11/[Java 11]
 * link:https://maven.apache.org/[Maven >=3.6.0]
+* link:https://www.jaegertracing.io/docs/1.14/[Jaeger Tracing] +
+  The tracing backend for the traces
 * link:https://microprofile.io/project/eclipse/microprofile-config[microprofile-config] +
   MicroProfile-Config for injecting config parameters
 * link:https://microprofile.io/project/eclipse/microprofile-health[microprofile-health] +
   MicroProfile-Health for health endpoints
 * link:https://microprofile.io/project/eclipse/microprofile-rest-client[microprofile-rest-client] +
   MicroProfile-Rest-Client for type-safe Rest-Clients
+* link:https://microprofile.io/project/eclipse/microprofile-opentracing[microprofile-opentracing] +
+  MicroProfile-Opentracing for tracing request within and over multiple services
 * link:https://maven.fabric8.io/[fabric8-maven-plugin] +
   A maven plugin which can produce docker images, and is capable of intercating with kubernetes/opesnhift
 * link:https://docs.thorntail.io/2.5.0.Final/#using-thorntail-maven-plugin_thorntail[thorntail-maven-plugin] +
@@ -39,6 +43,18 @@ The following listed resources of thi project are worth being mentioned.
 === Google search-Engine/API-Token
 Follow the instructions on this page link:https://developers.google.com/custom-search/v1/using_rest[this] to setup
 your custom search engine and generate an api token.
+
+=== Localhost
+Start a docker container with Jaeger which will collect the traces from either thorntail or wildfly deployments.
+
+.Start Jaeger with Docker
+[source,bash]
+----
+docker run -it --rm -p 6831:6831/udp -p 16686:16686 jaegertracing/all-in-one@sha256:de75e76302ac8776c0d95138d15f606c72c5059050ccbe066c462999e1dcd0af
+----
+
+IMPORTANT: localhost:6831 = The agent collecting traces +
+           localhost:16686 = The Jaeger-UI
 
 === Thorntail
 Create a yml file with the following configurations which is used when using thorntail locally. +
@@ -69,6 +85,15 @@ thorntail:
             google.rest/mp-rest/scope: "javax.enterprise.context.Dependent"
             google.rest.cx: "your_search_engine_cx"
             google.rest.apiKey: "your_google_api_key_for_search_engine"
+  jaeger:
+    service-name: sample
+    # Openshift=jaeger-agent, Local=localhost
+    agent-host: <HOST_NAME>
+    agent-port: 6831
+    reporter-log-spans: true
+    reporter-flush-interval: 100
+    sampler-type: const
+    sampler-parameter: 1
 ----
 
 === Wildfly
@@ -92,17 +117,28 @@ confidential configuration parameters.
 .Create openshift secret
 [source,bash]
 ----
- oc create secret generic sample --from-file=thorntail.yml=thorntail.yml
+oc create secret generic sample --from-file=thorntail.yml=thorntail.yml
+----
+
+.Create Jaeger-Service
+[source, bash]
+----
+oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/d22eb629f12ba6fb8cc83ccfca71b37ec41afdc2/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
 ----
 
 == Run the application
-=== Thorntail
+=== Localhost
+==== Thorntail
+Ensure the jaeger-agent is running on configured host and port.
 
 .Via maven plugin
 [source,bash]
 ----
 mvn clean install thorntail:run -Pthorntail
 ----
+
+WARNING: Unfortunately fails with ClassNotFoundException. +
+         java.lang.ClassNotFoundException: org.eclipse.microprofile.rest.client.spi.RestClientBuilderResolver
 
 .As standalone jar
 [source,bash]
@@ -114,7 +150,8 @@ WARNING: On Windows you need to put the system properties in quotes. E.g "-Djava
          See link:https://appuals.com/how-to-fix-unable-to-execute-file-in-the-temporary-directory-error-on-windows-7-8-and-10/[here]
          for help with permission issue with TEMP directory
 
-=== Wildfly
+==== Wildfly
+Ensure the jaeger-agent is running on configured host and port.
 
 .Via maven plugin
 [source,bash]
@@ -122,8 +159,10 @@ WARNING: On Windows you need to put the system properties in quotes. E.g "-Djava
 mvn clean install wildfly:run -Pwildfly
 ----
 
-=== Fabric8 (Openshift)
-Ensure your are logged into a openshift Clsuter >=3.9 and have the proper project selected.
+=== Openshift
+==== Fabric8
+Ensure your are logged into a openshift Clsuter >=3.9 and have the proper project selected. +
+Ensure the jaeger service is installed in the openshift project and available via configured host and port.
 
 .Via maven plugin
 [source,bash]

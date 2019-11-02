@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * This interface specifies the external rest resource we want to use via a Rest-Client.
+ * If we want tracing to be enabled on the client, then we need to create the client our self.
  *
  * @author Thomas Herzog <herzog.thomas81@gmail.com>
  * @since 11/1/2019
