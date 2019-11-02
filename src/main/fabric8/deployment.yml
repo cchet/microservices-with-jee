@@ -46,7 +46,7 @@ spec:
             - containerPort: 8080
           volumeMounts:
               - name: "${project.artifactId}-secret"
-                mountPath: "${ocp.mpc.dir}"
+                mountPath: "${ocp.config.dir}"
                 readOnly: true
           env:
             - name: "AB_JOLOKIA_HTTPS"
@@ -55,5 +55,7 @@ spec:
               value: "true"
             - name: "JAVA_MAX_MEM_RATIO"
               value: "95"
+            - name: "JAVA_ARGS"
+              value: "-s ${ocp.config.dir}/thorntail.yml"
             - name: "JAVA_OPTIONS"
-              value: "-Dthorntail.bind.address=0.0.0.0 -Djava.net.preferIPv4Stack=true -Dthorntail.project.stage=openshift"
+              value: "-Dthorntail.bind.address=0.0.0.0 -Djava.net.preferIPv4Stack=true"

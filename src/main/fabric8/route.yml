@@ -1,5 +1,4 @@
 spec:
-  host: "${project.artifactId}.openshift.atliwest.local"
   to:
     kind: Service
     name: ${project.artifactId}

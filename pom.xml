@@ -24,8 +24,12 @@
 
 
         <!-- OCP Descriptor Fragment Parameters -->
-        <ocp.mpc.dir>/config/mpc</ocp.mpc.dir>
+        <ocp.config.dir>/config</ocp.config.dir>
         <ocp.secret.name>${project.artifactId}</ocp.secret.name>
+
+        <!-- Fabric8 Properties -->
+        <fabric8.skipHealthCheck>true</fabric8.skipHealthCheck>
+        <fabric8.openshift.imageChangeTrigger>true</fabric8.openshift.imageChangeTrigger>
     </properties>
     <dependencies>
         <dependency>
@@ -151,7 +155,6 @@
                             <properties>
                                 <thorntail.bind.address>127.0.0.1</thorntail.bind.address>
                                 <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
-                                <thorntail.project.stage>local</thorntail.project.stage>
                             </properties>
                             <jvmArguments>
                                 <jvmArgument>-Xmx256m</jvmArgument>
@@ -221,7 +224,7 @@
                         <version>${fabric8.maven.plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>deploy-openshift</id>
+                                <id>openshift</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>resource</goal>
@@ -235,11 +238,6 @@
                                  Necessary to get java 11 builder image.
                                  See common generator properties: https://maven.fabric8.io/#generators
                             -->
-                            <enricher>
-                                <excludes>
-                                    <exclude>f8-expose</exclude>
-                                </excludes>
-                            </enricher>
                             <generator>
                                 <config>
                                     <thorntail-v2>

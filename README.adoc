@@ -1,8 +1,36 @@
 = microservices-with-jee
 
-Showcase of microservices with JEE technologies
+This repository holds a showcase of a microservice implemented in JEE (Jakarta-Enterprise) with thorntail, which
+has been implemented for the community event https://www.devtreff.io/.
 
-== Thorntail
+== Description
+The microservice has been implemented in plain JEE with making use of some microprofile specifcations. +
+This application can be deployed as a standalone microservice or in a wildfly server, which shall illustrate that
+the application doesn't need to be implemented in a special way to get it running as a microservice.
+
+The following technologies have been used to implement and run the microservice:
+
+* link:https://maven.fabric8.io/[fabric8-maven-plugin] +
+  A maven plugin which can produce docker images, and is capable of intercating with kubernetes/opesnhift
+* link:https://docs.thorntail.io/2.5.0.Final/#using-thorntail-maven-plugin_thorntail[thorntail-maven-plugin] +
+  A maven plugin for packaging the WAR into a standalone fat jar
+* link:https://docs.jboss.org/wildfly/plugins/maven/latest/[wildfly-maven-plugin] +
+  A maven plugin to interact with a wildfly server
+
+The following listed resources of thi project are worth being mentioned.
+
+* ``src/main/fabric8/deployment.yml`` +
+  The openshift deployment fragment used and enriched by fabric8
+* ``src/main/fabric8/route.yml`` +
+  The openshift route fragment used and enriched by fabric8
+
+== Preparations
+
+=== Google search-Engine/API-Token
+Follow the instructions on this page link:https://developers.google.com/custom-search/v1/using_rest[this] to setup
+your custom search engine and generate an api token.
+
+=== Thorntail
 Create a yml file with the following configurations which is used when using thorntail locally. +
 Place in the root of the maven project.
 
@@ -25,19 +53,7 @@ thorntail:
             google.rest.apiKey: "your_google_api_key_for_Search_engine"
 ----
 
-Create a properties file with the following configurations which is used when using thorntail within openshift.
-
-.thorntail.properties
-[source,properties]
-----
-info.text=This is the wildfly info test
-google.rest/mp-rest/url=https://www.googleapis.com
-google.rest/mp-rest/scope=javax.enterprise.context.RequestScoped
-google.rest.cx=your_search_engine_cx
-google.rest.apiKey=your_google_api_key_for_Search_engine
-----
-
-== Wildfly
+=== Wildfly
 Create a properties file with the following configurations which is used when using wildfly.
 Place in the root of the maven project.
 
@@ -51,14 +67,12 @@ google.rest.cx=your_search_engine_cx
 google.rest.apiKey=your_google_api_key_for_Search_engine
 ----
 
-== Openshift
+=== Openshift
 Create a Openshift secret which holds the configurations for the microservice. We use a secret because we have
 confidential configuration parameters.
 
 .Create openshift secret
 [source,bash]
 ----
- oc create secret generic sample --from-env-file=thorntail.properties
+ oc create secret generic sample --from-file=thorntail.yml=thorntail.yml
 ----
-
-WARNING: This command works with OCP 3.9 and later.
