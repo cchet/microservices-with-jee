@@ -1,4 +1,4 @@
-package at.ihet.examples.microservice.jee.restclient;
+package at.ihet.examples.microservice.jee.microprofile.restclient;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 

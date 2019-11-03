@@ -1,7 +1,7 @@
 package at.ihet.examples.microservice.jee.service;
 
-import at.ihet.examples.microservice.jee.config.Configuration;
-import at.ihet.examples.microservice.jee.restclient.GoogleSearchApi;
+import at.ihet.examples.microservice.jee.microprofile.config.Configuration;
+import at.ihet.examples.microservice.jee.microprofile.restclient.GoogleSearchApi;
 import org.eclipse.microprofile.opentracing.Traced;
 
 import javax.enterprise.context.ApplicationScoped;

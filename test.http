@@ -1,5 +1,5 @@
-GET http://localhost:8080/info
-# GET http://localhost:8080/sample-0.0.1-SNAPSHOT/info
+# GET http://localhost:8080/info
+GET http://localhost:8080/sample-0.0.1-SNAPSHOT/info
 ###
 
 # GET http://localhost:8080/config

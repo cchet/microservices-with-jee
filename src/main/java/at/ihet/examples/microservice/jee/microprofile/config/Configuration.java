@@ -1,5 +1,5 @@
 
-package at.ihet.examples.microservice.jee.config;
+package at.ihet.examples.microservice.jee.microprofile.config;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

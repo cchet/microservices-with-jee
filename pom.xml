@@ -184,6 +184,8 @@
                             <jvmArguments>
                                 <jvmArgument>-Xmx256m</jvmArgument>
                             </jvmArguments>
+                            <bundleDependencies>true</bundleDependencies>
+                            <useUberJar>true</useUberJar>
                         </configuration>
                         <executions>
                             <execution>
@@ -273,7 +275,7 @@
                             <apiVersion>1</apiVersion>
                             <mode>openshift</mode>
                             <buildStrategy>s2i</buildStrategy>
-                            <buildRecreate>none</buildRecreate>
+                            <buildRecreate>all</buildRecreate>
                         </configuration>
                     </plugin>
                 </plugins>

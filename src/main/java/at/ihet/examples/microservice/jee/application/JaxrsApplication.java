@@ -1,5 +1,5 @@
 
-package at.ihet.examples.microservice.jee;
+package at.ihet.examples.microservice.jee.application;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

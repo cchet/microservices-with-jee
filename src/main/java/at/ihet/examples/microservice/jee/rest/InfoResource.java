@@ -1,7 +1,7 @@
 
 package at.ihet.examples.microservice.jee.rest;
 
-import at.ihet.examples.microservice.jee.config.Configuration;
+import at.ihet.examples.microservice.jee.microprofile.config.Configuration;
 import at.ihet.examples.microservice.jee.service.InfoService;
 import org.eclipse.microprofile.opentracing.Traced;
 

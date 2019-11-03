@@ -1,4 +1,4 @@
-package at.ihet.examples.microservice.jee.health;
+package at.ihet.examples.microservice.jee.microprofile.health;
 
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
